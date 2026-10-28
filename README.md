@@ -39,7 +39,7 @@ When a subscriber's data changes (e.g. phone number), we don't overwrite the old
 **Orchestration**
 Used Databricks Jobs to chain Bronze → Silver → Gold notebooks with dependencies, so the entire pipeline runs automatically in the correct order. 
 
-challenges faced: -
+**challenges faced: -**
 While merging the complaint table, the match condition was only on complaint ID. Since one complaint ID had two rows (old history + current), MERGE updated both instead of just the current one. I fixed it by adding is_current = true to the match condition.
 I learned that append is not idempotent — running the same write operation again inserts duplicate rows, since it always adds data without checking what’s already there. MERGE, on the other hand, checks for matches first, so it’s safer to re-run.
 I learned that before writing or reading any data, I need to check what format it’s actually saved in (Parquet vs Delta) and the correct path — assuming without checking causes a lot of confusing errors. I also learned that a Spark session restart clears all variables, so imports and dataframes need to be reloaded before continuing.
